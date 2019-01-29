@@ -1,0 +1,45 @@
+{
+  "name": "sinon-mongo",
+  "version": "1.0.0",
+  "description": "sinon extensions for unit testing code using the mongodb driver",
+  "author": {
+    "name": "Daniel Jimenez Garcia",
+    "url": "https://github.com/DaniJG"
+  },
+  "repository": {
+    "url": "https://github.com/DaniJG/sinon-mongo"
+  },
+  "homepage": "https://github.com/DaniJG/sinon-mongo",
+  "keywords": [
+    "sinon",
+    "mongo",
+    "mongodb",
+    "mock",
+    "stub",
+    "test",
+    "unit"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc mocha --recursive"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test",
+      "pre-push": "npm test"
+    }
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "husky": "^1.3.1",
+    "mocha": "^5.2.0",
+    "mongodb": "^3.1.13",
+    "nyc": "^13.1.0",
+    "sinon": "^7.2.3"
+  },
+  "peerDependencies": {
+    "sinon": ">= 6.3.0",
+    "mongodb": "> 3"
+  },
+  "license": "MIT"
+}
