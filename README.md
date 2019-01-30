@@ -18,12 +18,15 @@ $ npm install sinon-mongo
 
 ## Usage
 
-Simply `require('sinon-mongo')` to extend sinon with a `sinon.mongo` object. Use this object to create stubs of various classes in the mongo API.
-
+Simply `require('sinon-mongo')` to extend sinon with a `sinon.mongo` object. 
 ```js
 const sinon = require('sinon');
 require('sinon-mongo');
+// sinon.mongo is now available!
+```
 
+Then use `sinon.mongo` to create stubs of various classes in the mongo API.
+```js
 // ---- stub collections ----
 const mockCollection = sinon.mongo.collection({
   // optionally specific stubs defined when creating the stub collection
