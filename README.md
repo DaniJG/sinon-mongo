@@ -204,6 +204,11 @@ module.exports = {
 
 Then a test using sinon-mongo could look like:
 ```js
+const mongodb = require('mongodb');
+const sinon = require('sinon');
+require('sinon-mongo');
+const sampleController = require('../src/sample-controller');
+
 describe('the sample controller', () => {
   let mockRequest;
   let mockResponse;
@@ -276,6 +281,12 @@ module.exports = db => ({
 Notice how the db is manually injected, so in order to use this repository module you would `const repo = require('./sample-repository')(dbInstance)`.
 This makes easy to inject a mock db when writing a test:
 ```js
+const expect = require('chai').expect;
+const mongodb = require('mongodb');
+const sinon = require('sinon');
+require('sinon-mongo');
+const sampleRepository = require('../src/sample-repository');
+
 describe('the sample repository', () => {
   let mockId;
   let mockDb;
