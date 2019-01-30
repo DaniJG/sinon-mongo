@@ -1,6 +1,6 @@
 {
   "name": "sinon-mongo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "sinon extensions for unit testing code using the mongodb driver",
   "author": {
     "name": "Daniel Jimenez Garcia",
