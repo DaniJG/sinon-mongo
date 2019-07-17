@@ -291,6 +291,26 @@ describe('sinon-mongo', () => {
       });
     });
 
+    describe('that use sort()', () => {
+      it('can use the documentArray to mimic a sort call', () => {
+        const data = [{the: 'first mock document'}, {the: 'second mock document'}];
+        const mockCollection = {
+          find: sinon.stub()
+            .withArgs({name: 'foo'}, {email: 1, name: 1})
+            .returns(sinon.mongo.documentArray(data))
+        };
+
+        return mockCollection.find({name: 'foo'}, {email: 1, name: 1})
+          .sort()
+          .toArray()
+
+        .then(result => {
+          expect(result).to.have.lengthOf(2);
+          expect(result).to.be.eql([{the: 'first mock document'}, {the: 'second mock document'}]);
+        })
+      });
+    });
+
     describe('that return streams', () => {
       const functionUsingCollection = collection => {
         return collection
