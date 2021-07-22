@@ -1,7 +1,6 @@
 const sinon = require('sinon');
 const expect = require('chai').expect;
-const { MongoClient, Db } = require('mongodb');
-const Collection = require('mongodb/lib/collection');
+const { MongoClient, Db, Collection } = require('mongodb');
 const { install } = require('../../lib/sinon-mongo');
 
 describe('sinon-mongo', () => {
@@ -12,7 +11,7 @@ describe('sinon-mongo', () => {
   const getFunctionsToStub = function(proto){
     return Object
       .getOwnPropertyNames(proto)
-      .filter(p => {        
+      .filter(p => {
         try {
           return typeof(proto[p]) === 'function' && p !== 'constructor'
         } catch(e) {
@@ -21,9 +20,9 @@ describe('sinon-mongo', () => {
       });
   };
 
-  describe('when stubbing MongoClient', () => {    
+  describe('when stubbing MongoClient', () => {
     let mockMongoClient;
-    beforeEach(() => {      
+    beforeEach(() => {
       mockMongoClient = sinon.mongo.mongoClient();
     });
 
@@ -39,10 +38,10 @@ describe('sinon-mongo', () => {
       const functionUsingMongoClient = mongoClient => {
         return mongoClient.connect();
       };
-  
+
       // Act
       return functionUsingMongoClient(mockMongoClient)
-      
+
       // Assert
       .then(result => {
         expect(result).to.be.equal(mockMongoClient);
@@ -55,10 +54,10 @@ describe('sinon-mongo', () => {
         return mongoClient.connect()
           .then(() => mongoClient.db('someOtherDbName'));
       };
-  
+
       // Act
       return functionUsingMongoClient(mockMongoClient)
-      
+
       // Assert
       .then(result => {
         expect(result.collection).to.be.a('function');
@@ -78,7 +77,7 @@ describe('sinon-mongo', () => {
       });
 
       // Act
-      // Assert      
+      // Assert
       expect(mockMongoClient.db('default')).to.be.equal(mockDefaultDb);
       expect(mockMongoClient.db('reporting')).to.be.equal(mockReportingDb);
     });
@@ -92,10 +91,10 @@ describe('sinon-mongo', () => {
         return mongoClient.connect()
           .then(() => mongoClient.db('myDb'));
       };
-  
+
       // Act
       return functionUsingMongoClient(mockMongoClient)
-      
+
       // Assert
       .then(result => expect(result).to.be.eql({my: 'mock object'}));
     });
@@ -117,8 +116,8 @@ describe('sinon-mongo', () => {
 
       // Act
       const result = mockDb.collection('myCollection');
-      
-      // Assert      
+
+      // Assert
       expect(result.find).to.be.a('function');
       expect(result.find.withArgs).to.be.a('function');
     });
@@ -133,7 +132,7 @@ describe('sinon-mongo', () => {
       });
 
       // Act
-      // Assert      
+      // Assert
       expect(mockDb.collection('customers')).to.be.equal(mockCustomersCollection);
       expect(mockDb.collection('organizations')).to.be.equal(mockOrganizationsCollection);
     });
@@ -146,17 +145,17 @@ describe('sinon-mongo', () => {
       mockDb.collection
         .withArgs('myCollection')
         .returns({my: 'mock collection'});
-  
+
       // Act
-      // Assert      
+      // Assert
       expect(mockDb.collection('myCollection')).to.be.eql({my: 'mock collection'});
     });
   });
 
   describe('when stubbing a collection', () => {
-    let mockCollection;    
+    let mockCollection;
 
-    beforeEach(() => {      
+    beforeEach(() => {
       mockCollection = sinon.mongo.collection();
     });
 
@@ -165,7 +164,7 @@ describe('sinon-mongo', () => {
         expect(mockCollection[methodName]).to.be.a('function');
         expect(mockCollection[methodName].withArgs).to.be.a('function');
       });
-    });    
+    });
 
     it('method stubs can be directly provided', () => {
       // Arrange
@@ -175,21 +174,21 @@ describe('sinon-mongo', () => {
 
       // Act
       mockCollection.findOne({name: 'mockName'})
-      
-      // Assert      
+
+      // Assert
       .then(result => expect(result).to.be.eql({my: 'mock object'}));
     });
 
     it('each of the method stubs can be further customised after initialization', () => {
       // Arrange
-      mockCollection.findOne      
+      mockCollection.findOne
         .withArgs({name: 'mockName'})
         .resolves({my: 'mock object'});
-  
+
       // Act
       mockCollection.findOne({name: 'mockName'})
-      
-      // Assert      
+
+      // Assert
       .then(result => expect(result).to.be.eql({my: 'mock object'}));
     });
   });
@@ -202,31 +201,31 @@ describe('sinon-mongo', () => {
       };
 
       it('can stub the method to resolve with empty response', () => {
-        // Arrange   
+        // Arrange
         const mockCollection = {
           findOne: sinon.stub()
             .withArgs({name: 'foo'}, {email: 1, name: 1})
             .resolves()
         };
-  
+
         // Act
         return functionUsingCollection(mockCollection)
-        
+
         // Assert
         .then(result => expect(result).to.be.undefined);
       });
 
       it('can stub the method to resolve with a single document', () => {
-        // Arrange   
+        // Arrange
         const mockCollection = {
           findOne: sinon.stub()
             .withArgs({name: 'foo'}, {email: 1, name: 1})
             .resolves({a: 'mock document'})
         };
-  
+
         // Act
         return functionUsingCollection(mockCollection)
-        
+
         // Assert
         .then(result => expect(result).to.be.eql({a: 'mock document'}));
       });
@@ -240,31 +239,31 @@ describe('sinon-mongo', () => {
       };
 
       it('can use the documentArray to return an empty array', () => {
-        // Arrange   
+        // Arrange
         const mockCollection = {
           find: sinon.stub()
             .withArgs({name: 'foo'}, {email: 1, name: 1})
             .returns(sinon.mongo.documentArray())
         };
-  
+
         // Act
         return functionUsingCollection(mockCollection)
-        
+
         // Assert
         .then(result => expect(result).to.be.eql([]));
       });
 
       it('can use the documentArray to return an array of a single document', () => {
-        // Arrange   
+        // Arrange
         const mockCollection = {
           find: sinon.stub()
             .withArgs({name: 'foo'}, {email: 1, name: 1})
             .returns(sinon.mongo.documentArray({a: 'mock document'}))
         };
-  
+
         // Act
         return functionUsingCollection(mockCollection)
-        
+
         // Assert
         .then(result => {
           expect(result).to.have.lengthOf(1);
@@ -273,16 +272,16 @@ describe('sinon-mongo', () => {
       });
 
       it('can use the documentArray to return an array of multiple documents', () => {
-        // Arrange   
+        // Arrange
         const mockCollection = {
           find: sinon.stub()
             .withArgs({name: 'foo'}, {email: 1, name: 1})
             .returns(sinon.mongo.documentArray([{the: 'first mock document'}, {the: 'second mock document'}]))
-        };        
-  
+        };
+
         // Act
         return functionUsingCollection(mockCollection)
-        
+
         // Assert
         .then(result => {
           expect(result).to.have.lengthOf(2);
@@ -318,17 +317,17 @@ describe('sinon-mongo', () => {
           .stream();
       };
 
-      it('can use the documentStream returning an empty readable stream', done => {  
-        // Arrange 
+      it('can use the documentStream returning an empty readable stream', done => {
+        // Arrange
         const mockCollection = {
           find: sinon.stub()
             .withArgs({name: 'foo'}, {email: 1, name: 1})
             .returns(sinon.mongo.documentStream())
-        };        
-  
+        };
+
         // Act
         const stream = functionUsingCollection(mockCollection);
-        
+
         // Assert
         const documents = [];
         stream.on('data', d => documents.push(d));
@@ -338,17 +337,17 @@ describe('sinon-mongo', () => {
         });
       });
 
-      it('can use the documentStream returning a readable stream with a single document', done => {  
-        // Arrange 
+      it('can use the documentStream returning a readable stream with a single document', done => {
+        // Arrange
         const mockCollection = {
           find: sinon.stub()
             .withArgs({name: 'foo'}, {email: 1, name: 1})
             .returns(sinon.mongo.documentStream({a: 'mock document'}))
-        };        
-  
+        };
+
         // Act
         const stream = functionUsingCollection(mockCollection);
-        
+
         // Assert
         const documents = [];
         stream.on('data', d => documents.push(d));
@@ -358,17 +357,17 @@ describe('sinon-mongo', () => {
         });
       });
 
-      it('can use the documentStream returning a readable stream with multiple documents', done => {  
-        // Arrange 
+      it('can use the documentStream returning a readable stream with multiple documents', done => {
+        // Arrange
         const mockCollection = {
           find: sinon.stub()
             .withArgs({name: 'foo'}, {email: 1, name: 1})
             .returns(sinon.mongo.documentStream([{the: 'first mock document'}, {the: 'second mock document'}]))
         };
-  
+
         // Act
         const stream = functionUsingCollection(mockCollection);
-        
+
         // Assert
         const documents = [];
         stream.on('data', d => documents.push(d));
@@ -379,24 +378,24 @@ describe('sinon-mongo', () => {
         });
       });
     });
-    
+
     describe('that return streams without explicitly calling stream()', () => {
       const functionUsingCollection = collection => {
         return collection
           .find({name: 'foo'}, {email: 1, name: 1});
       };
 
-      it('can use the documentStream returning a readable stream with multiple documents', done => {  
-        // Arrange 
+      it('can use the documentStream returning a readable stream with multiple documents', done => {
+        // Arrange
         const mockCollection = {
           find: sinon.stub()
             .withArgs({name: 'foo'}, {email: 1, name: 1})
             .returns(sinon.mongo.documentStream([{the: 'first mock document'}, {the: 'second mock document'}]))
         };
-  
+
         // Act
         const stream = functionUsingCollection(mockCollection);
-        
+
         // Assert
         const documents = [];
         stream.on('data', d => documents.push(d));
