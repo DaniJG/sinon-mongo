@@ -83,7 +83,7 @@ describe('sinon-mongo', () => {
       const mockUpdates = {the: 'updated properties'};
       const mockUpdatedCustomer = {the: 'updated customer'};
       mockCustomerCollection.findOneAndUpdate
-        .withArgs({ _id: mockId }, { $set: mockUpdates })
+        .withArgs({ _id: sinon.match(val => mockId.equals(val)) }, { $set: mockUpdates })
         .resolves({ value: mockUpdatedCustomer });
 
       return repository.updateCustomer(mockId, mockUpdates).then(updatedCustomer => {

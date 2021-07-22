@@ -1,6 +1,6 @@
 # sinon-mongo
 
-Extend [sinon.js](https://sinonjs.org/) with stubs for testing code that uses the MongoDB [Node.js driver](https://mongodb.github.io/node-mongodb-native/)
+Extend [sinon.js](https://sinonjs.org/) with stubs for testing code that uses the MongoDB [Node.js driver](https://mongodb.github.io/node-mongodb-native/4.0/index.html)
 
 * [Installation](#installation)
 * [Usage](#usage)
@@ -14,11 +14,13 @@ Extend [sinon.js](https://sinonjs.org/) with stubs for testing code that uses th
 $ npm install sinon-mongo
 ```
 
-> Important! sinon-mongo expects sinon >=6.3.0 and mongodb >3.X as peer-dependencies
+> sinon-mongo expects sinon >=6.3.0 and mongodb >=4.X as **peer-dependencies**.
+
+> If you use mongodb 3.X, please install version 1.1.0 of sinon-mongo
 
 ## Usage
 
-Simply `require('sinon-mongo')` to extend sinon with a `sinon.mongo` object. 
+Simply `require('sinon-mongo')` to extend sinon with a `sinon.mongo` object.
 ```js
 const sinon = require('sinon');
 require('sinon-mongo');
@@ -30,7 +32,7 @@ Then use `sinon.mongo` to create stubs of various classes in the mongo API.
 // ---- stub collections ----
 const mockCollection = sinon.mongo.collection({
   // optionally specific stubs defined when creating the stub collection
-  findOneAndUpdate: sinon.stub().withArgs({name: 'foo'}).resolves({value: {a: 'mock object'}}); 
+  findOneAndUpdate: sinon.stub().withArgs({name: 'foo'}).resolves({value: {a: 'mock object'}});
 });
 // By default, every collection method is also a sinon stub
 mockCollection.findOne.withArgs({name: 'foo'}).resolves({a: 'mock object'});
@@ -61,7 +63,7 @@ mockMongoClient.connect().then(mongoClient => mongoClient.db('myDbName'));
 
 ### sinon.mongo.collection
 
-Use this API to create stubs of the MongoDB [Collection](http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html) type. 
+Use this API to create stubs of the MongoDB [Collection](https://mongodb.github.io/node-mongodb-native/4.0/classes/collection.html) type.
 
 Every method available in the MongoDB **Collection** type is defaulted as a sinon stub, whose behaviour you can further customise.
 ```js
@@ -71,7 +73,7 @@ sinon.mongo.collection(methodStubs[optional])
 const mockCollection = sinon.mongo.collection();
 mockCollection.findOne.withArgs(...).resolves(...);
 
-// Optionally provide method stubs. 
+// Optionally provide method stubs.
 // Equivalent to the earlier example:
 const mockCollection2 = sinon.mongo.collection({
   findOne: sinon.stub().withArgs(...).resolves(...);
@@ -83,7 +85,7 @@ sinon.assert.calledOnce(mockColletion2.insertOne);
 
 ### sinon.mongo.db
 
-Use this API to create stubs of the MongoDB [Db](http://mongodb.github.io/node-mongodb-native/3.1/api/Db.html) type. 
+Use this API to create stubs of the MongoDB [Db](https://mongodb.github.io/node-mongodb-native/4.0/classes/db.html) type.
 
 Every method available in the MongoDB **Db** type is defaulted as a sinon stub, whose behaviour you can further customise.
 ```js
@@ -110,7 +112,7 @@ mockDb3.listCollections.resolves(...);
 
 ### sinon.mongo.mongoClient
 
-Use this API to create stubs of the MongoDB [MongoClient](http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html) type. 
+Use this API to create stubs of the MongoDB [MongoClient](https://mongodb.github.io/node-mongodb-native/4.0/classes/mongoclient.html) type.
 
 Every method available in the MongoDB **MongoClient** type is defaulted as a sinon stub, whose behaviour you can further customise.
 ```js
@@ -136,7 +138,7 @@ mockMongoClient3.close.resolves();
 
 ### sinon.mongo.documentArray
 
-When testing code that uses some of the collection operations that return multiple documents, like [find](http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html#find), you can use this helper API to quickly stub its `toArray()` result, resolving to a promise with the required array.
+When testing code that uses some of the collection operations that return multiple documents, like [find](https://mongodb.github.io/node-mongodb-native/4.0/classes/collection.html#find), you can use this helper API to quickly stub its `toArray()` result, resolving to a promise with the required array.
 ```js
 sinon.mongo.documentArray(documents[optional, Array|Object])
 
@@ -156,7 +158,7 @@ sinon.mongo.documentArray({the: 'single document'})
 
 ### sinon.mongo.documentStream
 
-When testing code that uses some of the collection operations that return multiple documents, like [find](http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html#find), you can use this helper API to quickly stub its `stream()` result, returning a **readable stream** that emits the provided documents.
+When testing code that uses some of the collection operations that return multiple documents, like [find](https://mongodb.github.io/node-mongodb-native/4.0/classes/collection.html#find), you can use this helper API to quickly stub its `stream()` result, returning a **readable stream** that emits the provided documents.
 ```js
 sinon.mongo.documentStream(documents[optional, Array|Object])
 
@@ -190,7 +192,7 @@ module.exports = {
     return req
       .db
       .collection('customers')
-      .findOne({_id: mongodb.ObjectId(req.params.id)})      
+      .findOne({_id: mongodb.ObjectId(req.params.id)})
       .then(cust => res.send(cust))
       .catch(next);
   },
@@ -321,7 +323,7 @@ describe('the sample repository', () => {
     const mockUpdates = {the: 'updated properties'};
     const mockUpdatedCustomer = {the: 'updated customer'};
     mockCustomerCollection.findOneAndUpdate
-      .withArgs({ _id: mockId }, { $set: mockUpdates })
+      .withArgs({ _id: sinon.match(val => mockId.equals(val) }, { $set: mockUpdates })
       .resolves({ value: mockUpdatedCustomer });
 
     return repository.updateCustomer(mockId, mockUpdates).then(updatedCustomer => {
@@ -360,4 +362,4 @@ beforeEach(() => {
 
 ## License
 
-MIT © [Daniel Jimenez Garcia]()
+MIT © [Daniel Jimenez Garcia](https://danijg.github.io/)
