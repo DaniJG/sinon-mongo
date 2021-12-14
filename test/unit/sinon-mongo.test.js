@@ -310,6 +310,27 @@ describe('sinon-mongo', () => {
       });
     });
 
+    describe('that uses skip() and limit()', () => {
+      it('can use the documentArray to mimic paginated results using skip and limit', () => {
+        const data = [{the: 'first mock document'}, {the: 'second mock document'}];
+        const mockCollection = {
+          find: sinon.stub()
+            .withArgs({name: 'foo'}, {email: 1, name: 1})
+            .returns(sinon.mongo.documentArray(data))
+        };
+
+        return mockCollection.find({name: 'foo'}, {email: 1, name: 1})
+          .skip(1)
+          .limit(1)
+          .toArray()
+
+          .then(result => {
+            expect(result).to.have.lengthOf(2);
+            expect(result).to.be.eql([{the: 'first mock document'}, {the: 'second mock document'}]);
+          })
+      });
+    });
+
     describe('that return streams', () => {
       const functionUsingCollection = collection => {
         return collection
