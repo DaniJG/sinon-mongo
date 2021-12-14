@@ -156,6 +156,15 @@ sinon.mongo.documentArray()
 sinon.mongo.documentArray({the: 'single document'})
 ```
 
+The returned `documentArray` stub includes stub methods for `skip`, `limit` and `sort` (all of them sinon stubs themselves) that you can use to test code like:
+```js
+return collection.find({}, {email: 1, name: 1})
+  .skip(30)
+  .limit(10)
+  .sort({name: 1})
+  .toArray()
+```
+
 ### sinon.mongo.documentStream
 
 When testing code that uses some of the collection operations that return multiple documents, like [find](https://mongodb.github.io/node-mongodb-native/4.0/classes/collection.html#find), you can use this helper API to quickly stub its `stream()` result, returning a **readable stream** that emits the provided documents.
